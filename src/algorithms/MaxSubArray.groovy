@@ -18,7 +18,7 @@ def find_max_subarray_smart( array ) {
 
         if ( tentative < 0 ) {
             tentative = 0;
-            start = end = i + 1;
+            start = i + 1;
         }
 
     }
