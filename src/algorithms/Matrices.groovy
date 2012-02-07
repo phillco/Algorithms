@@ -39,14 +39,13 @@ def scalarMultiply(matrix, scalar) {
     return returnMatrix;
 }
 
-def multiplyMatrices(one, two) {
+/**
+ * Multiplies the two given square matrices naively (O(n^3), simply recurse down.)
+ */
+def naiveMultiplyMatrices(one, two) {
 
-    // One's # of columns and two's # of rows must match.
-    assert one[0].size() == two.size()
-
-    // Resultant matrix is [one's # of rows][two's # of columns].
-    // def returnMatrix = new int[one.size()][two[0].size()]
-    def returnMatrix = new int[one.size()][one.size()]
+    // The matrix must be square.
+    assert one.size() == one[0].size() && two.size() == two[0].size() && one.size() == two.size()
 
     if (one.size() == 1)
         return one[0][0] * two[0][0]
@@ -54,17 +53,17 @@ def multiplyMatrices(one, two) {
         def splitA = splitMatrix(one)
         def splitB = splitMatrix(two)
 
-        returnMatrix = [topLeft: addMatrices(multiplyMatrices(splitA.topLeft, splitB.topLeft),
-                multiplyMatrices(splitA.topRight, splitB.bottomLeft)),
+        def returnMatrix = [topLeft: addMatrices(naiveMultiplyMatrices(splitA.topLeft, splitB.topLeft),
+                naiveMultiplyMatrices(splitA.topRight, splitB.bottomLeft)),
 
-                topRight: addMatrices(multiplyMatrices(splitA.topLeft, splitB.topRight),
-                        multiplyMatrices(splitA.topRight, splitB.bottomRight)),
+                topRight: addMatrices(naiveMultiplyMatrices(splitA.topLeft, splitB.topRight),
+                        naiveMultiplyMatrices(splitA.topRight, splitB.bottomRight)),
 
-                bottomLeft: addMatrices(multiplyMatrices(splitA.bottomLeft, splitB.topLeft),
-                        multiplyMatrices(splitA.bottomRight, splitB.bottomLeft)),
+                bottomLeft: addMatrices(naiveMultiplyMatrices(splitA.bottomLeft, splitB.topLeft),
+                        naiveMultiplyMatrices(splitA.bottomRight, splitB.bottomLeft)),
 
-                bottomRight: addMatrices(multiplyMatrices(splitA.bottomLeft, splitB.topRight),
-                        multiplyMatrices(splitA.bottomRight, splitB.bottomRight))]
+                bottomRight: addMatrices(naiveMultiplyMatrices(splitA.bottomLeft, splitB.topRight),
+                        naiveMultiplyMatrices(splitA.bottomRight, splitB.bottomRight))]
 
         return combineMatrix(returnMatrix);
     }
@@ -172,12 +171,12 @@ def test() {
     assert subtractMatrices(matrixOne, new int[matrixOne.size()][matrixOne[0].size()]) == matrixOne
 
     // Test multiplying.
-    assert multiplyMatrices([[1, 3], [7, 5]], [[6, 8], [4, 2]]) == [[18, 14], [62, 66]]
+    assert naiveMultiplyMatrices([[1, 3], [7, 5]], [[6, 8], [4, 2]]) == [[18, 14], [62, 66]]
 
     def bigMatrixOne = [[34, 21, -98, 6], [20, 4, -12, 9], [6, 3, 9, 13], [4, -2, 10, 13]]
     def bigMatrixTwo = [[0, 12, -7, -20], [23, 32, 14, 9], [8, 5, -8, 12], [5, -7, 20, 2]]
     def bigMatrixResult = [[-271, 548, 960, -1655], [41, 245, 192, -490], [206, 122, 188, 41], [99, -57, 124, 48]]
-    assert multiplyMatrices(bigMatrixOne, bigMatrixTwo) == bigMatrixResult
+    assert naiveMultiplyMatrices(bigMatrixOne, bigMatrixTwo) == bigMatrixResult
 
     println "Success!"
 }
