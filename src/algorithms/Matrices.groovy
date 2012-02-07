@@ -5,8 +5,8 @@ package algorithms
  */
 def addMatrices(one, two) {
 
-    if (one instanceof Integer)
-        return (one + two);
+    one = engulfInMatrix(one)
+    two = engulfInMatrix(two)
 
     def returnMatrix = new int[one.size()][two.size()]
 
@@ -29,6 +29,8 @@ def subtractMatrices(one, two) {
  * Not a normal matrix function; this is mostly used as a helper method.
  */
 def scalarMultiply(matrix, scalar) {
+
+    matrix = engulfInMatrix(matrix)
 
     def returnMatrix = new int[matrix.size()][matrix[0].size()];
 
@@ -70,6 +72,47 @@ def naiveMultiplyMatrices(one, two) {
 }
 
 /**
+ * Multiplies the two matrices using Strassen's method, which is O(n^2.81).
+ */
+int[][] intelligentlyMultiplyMatrices(one, two) {
+
+    if (one.size() == 1)
+        return one[0][0] * two[0][0];
+
+    def a = splitMatrix(one)
+    def b = splitMatrix(two)
+
+    // Define the "S" matrix.
+    def s1 = subtractMatrices(b.topRight, b.bottomRight)
+    def s2 = addMatrices(a.topLeft, a.topRight)
+    def s3 = addMatrices(a.bottomLeft, a.bottomRight)
+    def s4 = subtractMatrices(b.bottomLeft, b.topLeft)
+    def s5 = addMatrices(a.topLeft, a.bottomRight)
+    def s6 = addMatrices(b.topLeft, b.bottomRight)
+    def s7 = subtractMatrices(a.topRight, a.bottomRight)
+    def s8 = addMatrices(b.bottomLeft, b.bottomRight)
+    def s9 = subtractMatrices(a.topLeft, a.bottomLeft)
+    def s10 = addMatrices(b.topLeft, b.topRight)
+
+    // Define the "P" matrix.
+    int[][] p1 = intelligentlyMultiplyMatrices(a.topLeft, s1)
+    int[][] p2 = intelligentlyMultiplyMatrices(s2, b.bottomRight)
+    int[][] p3 = intelligentlyMultiplyMatrices(s3, b.topLeft)
+    int[][] p4 = intelligentlyMultiplyMatrices(a.bottomRight, s4)
+    int[][] p5 = intelligentlyMultiplyMatrices(s5, s6)
+    int[][] p6 = intelligentlyMultiplyMatrices(s7, s8)
+    int[][] p7 = intelligentlyMultiplyMatrices(s9, s10)
+
+    // Fill in the resultant "C" matrix.
+    def c11 = addMatrices(subtractMatrices(addMatrices(p5, p4), p2), p6)
+    def c12 = addMatrices(p1, p2)
+    def c21 = addMatrices(p3, p4)
+    def c22 = subtractMatrices(subtractMatrices(addMatrices(p5, p1), p3), p7)
+
+    return (int[][]) combineMatrix(c11, c12, c21, c22);
+}
+
+/**
  * Splits the given matrix into four sub-matrices, one for each quadrant.
  * The new matrices are returned in a map with keys topLeft, topRight, bottomLeft, and bottomRight.
  */
@@ -96,12 +139,12 @@ def splitMatrix(matrix) {
 /**
  * Does the opposite of splitMatrix. Combines the four given parts into one big matrix.
  */
-def combineMatrix(topLeft, topRight, bottomLeft, bottomRight) {
+int[][] combineMatrix(topLeft, topRight, bottomLeft, bottomRight) {
 
     if (topLeft instanceof Integer)
-        return [[topLeft, topRight], [bottomLeft, bottomRight]];
+        return [[topLeft, topRight], [bottomLeft, bottomRight]] as int[][];
 
-    def returnMatrix = new int[topLeft.size() + bottomLeft.size()][topLeft[0].size() + topRight[0].size()]
+    int[][] returnMatrix = new int[topLeft.size() + bottomLeft.size()][topLeft[0].size() + topRight[0].size()]
 
     fillInSubset(returnMatrix, 0, 0, topLeft);
     fillInSubset(returnMatrix, (int) topLeft.size(), 0, bottomLeft);
@@ -141,6 +184,19 @@ def fillInSubset(matrix, int row, int column, subset) {
             matrix[i + row][j + column] = subset[i][j];
 }
 
+/**
+ * Ensures the given item is part of a 2D matrix. If it's merely an integer (a result of some base case operations), it's surrounded into a 1x1 matrix.
+ * This is useful for simplifying many matrix operation functions.
+ */
+def engulfInMatrix(argument) {
+    if (argument instanceof Integer)
+        return [[argument]];
+    else if (argument.size() == 1 && argument[0] instanceof Integer)
+        return [[argument[0]]]
+    else
+        return argument;
+}
+
 //==============
 // TESTING
 //==============
@@ -177,6 +233,10 @@ def test() {
     def bigMatrixTwo = [[0, 12, -7, -20], [23, 32, 14, 9], [8, 5, -8, 12], [5, -7, 20, 2]]
     def bigMatrixResult = [[-271, 548, 960, -1655], [41, 245, 192, -490], [206, 122, 188, 41], [99, -57, 124, 48]]
     assert naiveMultiplyMatrices(bigMatrixOne, bigMatrixTwo) == bigMatrixResult
+
+    // Test SMART multiplying.
+    assert intelligentlyMultiplyMatrices([[1, 3], [7, 5]], [[6, 8], [4, 2]]) == [[18, 14], [62, 66]]
+    assert intelligentlyMultiplyMatrices(bigMatrixOne, bigMatrixTwo) == bigMatrixResult
 
     println "Success!"
 }
