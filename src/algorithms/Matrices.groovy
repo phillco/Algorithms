@@ -5,6 +5,9 @@ package algorithms
  */
 def addMatrices(one, two) {
 
+    if (one instanceof Integer)
+        return (one + two);
+
     def returnMatrix = new int[one.size()][two.size()]
 
     for (int i = 0; i < one.size(); i++)
@@ -51,17 +54,17 @@ def multiplyMatrices(one, two) {
         def splitA = splitMatrix(one)
         def splitB = splitMatrix(two)
 
-        returnMatrix = [topLeft: multiplyMatrices(splitA.topLeft, splitB.topLeft) +
-                multiplyMatrices(splitA.topRight, splitB.bottomLeft),
+        returnMatrix = [topLeft: addMatrices(multiplyMatrices(splitA.topLeft, splitB.topLeft),
+                multiplyMatrices(splitA.topRight, splitB.bottomLeft)),
 
-                topRight: multiplyMatrices(splitA.topLeft, splitB.topRight) +
-                        multiplyMatrices(splitA.topRight, splitB.bottomRight),
+                topRight: addMatrices(multiplyMatrices(splitA.topLeft, splitB.topRight),
+                        multiplyMatrices(splitA.topRight, splitB.bottomRight)),
 
-                bottomLeft: multiplyMatrices(splitA.bottomLeft, splitB.topLeft) +
-                        multiplyMatrices(splitA.bottomRight, splitB.bottomLeft),
+                bottomLeft: addMatrices(multiplyMatrices(splitA.bottomLeft, splitB.topLeft),
+                        multiplyMatrices(splitA.bottomRight, splitB.bottomLeft)),
 
-                bottomRight: multiplyMatrices(splitA.bottomLeft, splitB.topRight) +
-                        multiplyMatrices(splitA.bottomRight, splitB.bottomRight)]
+                bottomRight: addMatrices(multiplyMatrices(splitA.bottomLeft, splitB.topRight),
+                        multiplyMatrices(splitA.bottomRight, splitB.bottomRight))]
 
         return combineMatrix(returnMatrix);
     }
@@ -170,6 +173,11 @@ def test() {
 
     // Test multiplying.
     assert multiplyMatrices([[1, 3], [7, 5]], [[6, 8], [4, 2]]) == [[18, 14], [62, 66]]
+
+    def bigMatrixOne = [[34, 21, -98, 6], [20, 4, -12, 9], [6, 3, 9, 13], [4, -2, 10, 13]]
+    def bigMatrixTwo = [[0, 12, -7, -20], [23, 32, 14, 9], [8, 5, -8, 12], [5, -7, 20, 2]]
+    def bigMatrixResult = [[-271, 548, 960, -1655], [41, 245, 192, -490], [206, 122, 188, 41], [99, -57, 124, 48]]
+    assert multiplyMatrices(bigMatrixOne, bigMatrixTwo) == bigMatrixResult
 
     println "Success!"
 }
