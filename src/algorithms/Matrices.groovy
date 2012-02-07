@@ -46,7 +46,7 @@ def multiplyMatrices(one, two) {
     def returnMatrix = new int[one.size()][one.size()]
 
     if (one.size() == 1)
-        return [one[0][0]]
+        return one[0][0] * two[0][0]
     else {
         def splitA = splitMatrix(one)
         def splitB = splitMatrix(two)
@@ -55,7 +55,7 @@ def multiplyMatrices(one, two) {
                 multiplyMatrices(splitA.topRight, splitB.bottomLeft),
 
                 topRight: multiplyMatrices(splitA.topLeft, splitB.topRight) +
-                        multiplyMatrices(splitA.bottomLeft, splitB.bottomRight),
+                        multiplyMatrices(splitA.topRight, splitB.bottomRight),
 
                 bottomLeft: multiplyMatrices(splitA.bottomLeft, splitB.topLeft) +
                         multiplyMatrices(splitA.bottomRight, splitB.bottomLeft),
@@ -63,8 +63,7 @@ def multiplyMatrices(one, two) {
                 bottomRight: multiplyMatrices(splitA.bottomLeft, splitB.topRight) +
                         multiplyMatrices(splitA.bottomRight, splitB.bottomRight)]
 
-        println returnMatrix
-        return returnMatrix;
+        return combineMatrix(returnMatrix);
     }
 }
 
@@ -96,6 +95,9 @@ def splitMatrix(matrix) {
  * Does the opposite of splitMatrix. Combines the four given parts into one big matrix.
  */
 def combineMatrix(topLeft, topRight, bottomLeft, bottomRight) {
+
+    if (topLeft instanceof Integer)
+        return [[topLeft, topRight], [bottomLeft, bottomRight]];
 
     def returnMatrix = new int[topLeft.size() + bottomLeft.size()][topLeft[0].size() + topRight[0].size()]
 
@@ -167,7 +169,7 @@ def test() {
     assert subtractMatrices(matrixOne, new int[matrixOne.size()][matrixOne[0].size()]) == matrixOne
 
     // Test multiplying.
- //   assert multiplyMatrices([[1, 3], [7, 5]], [[6, 8], [4, 2]]) == [[18, 14], [62, 66]]
+    assert multiplyMatrices([[1, 3], [7, 5]], [[6, 8], [4, 2]]) == [[18, 14], [62, 66]]
 
     println "Success!"
 }
