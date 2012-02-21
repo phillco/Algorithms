@@ -54,7 +54,7 @@ class MatrixChaining {
 
     static void printParentheses(cutPoints, i, j) {
         if (i == j)
-            print "A${(i + 1)}"
+            print "A${(i)}"
         else {
             print "("
             printParentheses(cutPoints, i, cutPoints[i][j])
@@ -84,7 +84,7 @@ class MatrixChaining {
         def results = calculateChain(dimensions)
 
         print "\nResults: "
-//        printParentheses(results.cutPoints, 0, dimensions.length - 1);
+        printParentheses(results.cutPoints, 1, dimensions.length - 1);
 
         println "\nCosts table (m):"
         print2dArray(results.cost, 8)
@@ -102,7 +102,7 @@ class MatrixChaining {
         printResults(testDimensions)
 
         int[] testDimensions2 = [5, 10, 3, 12, 5, 50, 6]
-        printResults(testDimensions2)
+//        printResults(testDimensions2)
 //
     }
 
