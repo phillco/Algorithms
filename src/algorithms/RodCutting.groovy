@@ -3,7 +3,7 @@ package algorithms
 /**
  * Demonstrates different algorithms for rod cutting.
  *
- * @see "Algorithms", Ch. 15,"Dynamic Programming"
+ * @see "Algorithms", Ch. 15.1, "Dynamic Programming"
  */
 class RodCutting {
 
