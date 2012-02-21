@@ -8,7 +8,7 @@ package algorithms
 class RodCutting {
 
     // The price for a rod of length [index]. These never change.
-    final static prices = [0, 1, 5, 8, 9, 10, 17, 17, 20, 24, 30]
+    final static int[] prices = [0, 1, 5, 8, 9, 10, 17, 17, 20, 24, 30]
 
     // Memoize the value of subproblems here.
     static int[] bestPrices = new int[prices.size()]
