@@ -52,13 +52,16 @@ class MatrixChaining {
         return [cost: cost, cutPoints: cutPoints]
     }
 
-    static void printParentheses(cutPoints, i, j) {
-        if (i == j)
-            print "A${(i)}"
+    /**
+     * Given the array of cut points and the starting and ending points, prints their parenthesization.
+     */
+    static void printParentheses(cutPoints, left, right) {
+        if (left == right)
+            print "A${(left)}"
         else {
             print "("
-            printParentheses(cutPoints, i, cutPoints[i][j])
-            printParentheses(cutPoints, cutPoints[i][j] + 1, j)
+            printParentheses(cutPoints, left, cutPoints[left][right])
+            printParentheses(cutPoints, cutPoints[left][right] + 1, right)
             print ")"
         }
     }
@@ -78,6 +81,21 @@ class MatrixChaining {
         }
     }
 
+    /**
+     * Simulates the multiplication of the list of the matrices given, using the cutPoints given.
+     * Note that this is psuedocode.
+     */
+    static def matrixChainMultiply(matrices, cutPoints, left, right) {
+
+        if (left == right)
+            return matrices[left]
+
+        def leftSide = matrixChainMultiply(matrices, cutPoints, left, cutPoints[left][right])
+        def rightSide = matrixChainMultiply(matrices, cutPoints, cutPoints[left][right] + 1, right)
+
+        return (leftSide * rightSide)
+    }
+
     static void printResults(int[] dimensions) {
 
         println "Calculating optimal chain for $dimensions..."
@@ -91,6 +109,9 @@ class MatrixChaining {
 
         println "\nCut points table (s):"
         print2dArray(results.cutPoints, 8)
+
+        // Test the multiplication.
+        matrixChainMultiply(dimensions, results.cutPoints, 1, dimensions.length);
     }
 
     /**
@@ -102,8 +123,7 @@ class MatrixChaining {
         printResults(testDimensions)
 
         int[] testDimensions2 = [5, 10, 3, 12, 5, 50, 6]
-//        printResults(testDimensions2)
-//
+        printResults(testDimensions2)
     }
 
     static void main(args) { test() }
