@@ -8,7 +8,7 @@ package algorithms
 class MatrixChaining {
 
     /**
-     * Given the chain of dimensions (ie [5, 10, 3] represents a 5x10 * 10x3) determine the ideal cutting order.
+     * Determines the ideal cutting order for the given chain of dimensions (ie [5, 10, 3, 7] represents a [5x10] * [10x3] * [3x7] multiplication.)
      * Returns [cost, cutPoints].
      *
      * Reference of the book's variable names:
@@ -96,6 +96,9 @@ class MatrixChaining {
         return (leftSide * rightSide)
     }
 
+    /**
+     * Just calculate & print details about the given matrix chain.
+     */
     static void printResults(int[] dimensions) {
 
         println "Calculating optimal chain for $dimensions..."
@@ -115,9 +118,9 @@ class MatrixChaining {
     }
 
     /**
-     * Tests all the algorithms.
+     * Demonstrates all the algorithms.
      */
-    static test() {
+    static demonstrate() {
 
         int[] testDimensions = [30, 35, 15, 5, 10, 20, 25]
         printResults(testDimensions)
@@ -126,5 +129,5 @@ class MatrixChaining {
         printResults(testDimensions2)
     }
 
-    static void main(args) { test() }
+    static void main(args) { demonstrate() }
 }
