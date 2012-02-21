@@ -7,14 +7,16 @@ package algorithms
  */
 class MatrixChaining {
 
-
+    /**
+     * Given the chain of dimensions (ie [5, 10, 3] represents a 5x10 * 10x3) determine the ideal cutting order.
+     * Returns [cost, cutPoints].
+     *
+     * Reference of the book's variable names:
+     *      p = matrixDimensions
+     *      m = cost
+     *      s = cutPoints
+     */
     static def calculateChain(int[] matrixDimensions) {
-
-        /*
-            p = matrixDimensions
-            m = cost
-            s = cutPoints
-         */
 
         def cost = new int[matrixDimensions.size()][matrixDimensions.size()]
         def cutPoints = new int[matrixDimensions.size()][matrixDimensions.size()]
@@ -37,9 +39,23 @@ class MatrixChaining {
             }
         }
 
-        return [cost: cost, cutPoint: cutPoints]
+        return [cost: cost, cutPoints: cutPoints]
     }
 
+    /**
+     * Nicely prints a 2D array.
+     */
+    static void print2dArray(array) {
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array[0].length; j++)
+                System.out.print(String.format("%8s", array[i][j]));
+            System.out.println();
+        }
+    }
+
+    /**
+     * Tests all the algorithms.
+     */
     static test() {
 
         int[] testDimensions = [30, 35, 15, 5, 10, 20, 25]
@@ -52,15 +68,7 @@ class MatrixChaining {
         print2dArray(results.cost)
 
         println "\nCUT POINTS for $testDimensions:"
-        print2dArray(results.cutPoint)
-    }
-
-    static void print2dArray(array) {
-        for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < array[0].length; j++)
-                System.out.print(String.format("%8s", array[i][j]));
-            System.out.println();
-        }
+        print2dArray(results.cutPoints)
     }
 
     static void main(args) { test() }
