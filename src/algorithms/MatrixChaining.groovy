@@ -18,24 +18,26 @@ class MatrixChaining {
      *      k = splitPoint
      *      i = left
      *      j = right
+     *      l = chainSize
      */
     static def calculateChain(int[] dimensions) {
 
         def cost = new int[dimensions.size()][dimensions.size()]
         def cutPoints = new int[dimensions.size()][dimensions.size()]
 
-        for (int l = 2; l < dimensions.length - 1; l++) {
+        // Test all possible chain sizes from 2 to the size of all the dimensions.
+        for (int chainSize = 2; chainSize < dimensions.length - 1; chainSize++) {
 
-            for (int left = 1; left < dimensions.length - l; left++) {
+            for (int left = 1; left < dimensions.length - chainSize; left++) {
 
-                int right = left + l - 1;
+                int right = left + chainSize - 1;
                 cost[left][right] = Integer.MAX_VALUE;
 
                 // Test all possible split points.
                 for (int splitPoint = left; splitPoint < right - 1; splitPoint++) {
 
-                    // Test the potential cost for a split at index splitPoint.
-                    // This is equal to the costs of the left and right side, PLUS the cost to combine the two. (Which is a multiplication itself.)
+                    // What's the potential cost for this split?
+                    // This is equal to the costs of the left and right side, PLUS the cost to combine the two. (Which will be a multiplication itself.)
                     int potentialCost = cost[left][splitPoint] + cost[splitPoint + 1][right] + (dimensions[left - 1] * dimensions[splitPoint] * dimensions[right]);
 
                     // Is it better than the cost we already have?
@@ -78,7 +80,7 @@ class MatrixChaining {
         def results = calculateChain(dimensions)
 
         print "\nResults: "
-        printParentheses(results.cutPoints, 0, dimensions.length - 1);
+        //  printParentheses(results.cutPoints, 0, dimensions.length - 1);
 
         println "\nCosts table (m):"
         print2dArray(results.cost)
@@ -96,7 +98,7 @@ class MatrixChaining {
 //        printResults(testDimensions)
 
         int[] testDimensions2 = [5, 10, 3, 12, 5, 50, 6]
-        printResults(testDimensions2)
+        printResults(testDimensions)
 //
     }
 
