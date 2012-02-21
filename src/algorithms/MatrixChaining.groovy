@@ -12,34 +12,53 @@ class MatrixChaining {
      * Returns [cost, cutPoints].
      *
      * Reference of the book's variable names:
-     *      p = matrixDimensions
+     *      p = dimensions
      *      m = cost
      *      s = cutPoints
+     *      k = splitPoint
+     *      i = left
+     *      j = right
      */
-    static def calculateChain(int[] matrixDimensions) {
+    static def calculateChain(int[] dimensions) {
 
-        def cost = new int[matrixDimensions.size()][matrixDimensions.size()]
-        def cutPoints = new int[matrixDimensions.size()][matrixDimensions.size()]
+        def cost = new int[dimensions.size()][dimensions.size()]
+        def cutPoints = new int[dimensions.size()][dimensions.size()]
 
-        for (int l: 2..matrixDimensions.size() - 1) {
+        for (int l = 2; l < dimensions.length - 1; l++) {
 
-            for (int i: 1..(matrixDimensions.length - l)) {
+            for (int left = 1; left < dimensions.length - l; left++) {
 
-                int j = i + l - 1;
-                cost[i][j] = Integer.MAX_VALUE;
+                int right = left + l - 1;
+                cost[left][right] = Integer.MAX_VALUE;
 
-                for (int k: i..(j - 1)) {
-                    int potentialCost = cost[i][k] + cost[k + 1][j] + matrixDimensions[i - 1] * matrixDimensions[k] * matrixDimensions[j];
+                // Test all possible split points.
+                for (int splitPoint = left; splitPoint < right - 1; splitPoint++) {
 
-                    if (potentialCost < cost[i][j]) {
-                        cost[i][j] = potentialCost;
-                        cutPoints[i][j] = k;
+                    // Test the potential cost for a split at index splitPoint.
+                    // This is equal to the costs of the left and right side, PLUS the cost to combine the two. (Which is a multiplication itself.)
+                    int potentialCost = cost[left][splitPoint] + cost[splitPoint + 1][right] + (dimensions[left - 1] * dimensions[splitPoint] * dimensions[right]);
+
+                    // Is it better than the cost we already have?
+                    if (potentialCost < cost[left][right]) {
+                        cost[left][right] = potentialCost;
+                        cutPoints[left][right] = splitPoint;
                     }
                 }
             }
         }
 
         return [cost: cost, cutPoints: cutPoints]
+    }
+
+    static void printParentheses(cutPoints, i, j) {
+        if (i == j)
+            print "A${(i + 1)}"
+        else {
+            print "("
+            printParentheses(cutPoints, i, cutPoints[i][j])
+            printParentheses(cutPoints, cutPoints[i][j] + 1, j)
+            print ")"
+        }
     }
 
     /**
@@ -53,22 +72,32 @@ class MatrixChaining {
         }
     }
 
+    static void printResults(int[] dimensions) {
+
+        println "Calculating optimal chain for $dimensions..."
+        def results = calculateChain(dimensions)
+
+        print "\nResults: "
+        printParentheses(results.cutPoints, 0, dimensions.length - 1);
+
+        println "\nCosts table (m):"
+        print2dArray(results.cost)
+
+        println "\nCut points table (s):"
+        print2dArray(results.cutPoints)
+    }
+
     /**
      * Tests all the algorithms.
      */
     static test() {
 
         int[] testDimensions = [30, 35, 15, 5, 10, 20, 25]
+//        printResults(testDimensions)
 
-//        int[] testDimensions2 = [5, 10, 3, 12, 5, 50, 6]
-
-        def results = calculateChain(testDimensions)
-
-        println "COSTS for $testDimensions:"
-        print2dArray(results.cost)
-
-        println "\nCUT POINTS for $testDimensions:"
-        print2dArray(results.cutPoints)
+        int[] testDimensions2 = [5, 10, 3, 12, 5, 50, 6]
+        printResults(testDimensions2)
+//
     }
 
     static void main(args) { test() }
