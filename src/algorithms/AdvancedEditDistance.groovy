@@ -15,9 +15,8 @@ package algorithms
 class AdvancedEditDistance {
 
     static enum BasicAction {
-        Dummmy, Insert, Delete, Replace, Copy, Twiddle, Kill
+        Insert, Delete, Replace, Copy, Twiddle, Kill
     }
-
 
     static getDefaultCosts() {
         ["Copy": 0, "Replace": 1, "Delete": 1, "Insert": 1, "Twiddle": 10, "Kill": 7]
@@ -28,28 +27,28 @@ class AdvancedEditDistance {
      */
     static def computeLevenshteinDistance(String one, String two, costs) {
 
-        def actions = new BasicAction[two.length() + 1][one.length() + 1]
-        def computations = new int[two.length() + 1][one.length() + 1]
+        def actions = new BasicAction[one.length() + 1][two.length() + 1]
+        def computations = new int[one.length() + 1][two.length() + 1]
 
         // Prefix the special case for the first row and column.
-        for (int j = 1; j <= one.length(); j++) {
-            computations[0][j] = j * costs["Delete"];
-            actions[0][j] = BasicAction.Delete;
-        }
-        for (int i = 1; i <= two.length(); i++) {
+        for (int i = 1; i <= one.length(); i++) {
             computations[i][0] = i * costs["Insert"];
             actions[i][0] = BasicAction.Insert;
         }
+        for (int j = 1; j <= two.length(); j++) {
+            computations[0][j] = j * costs["Delete"];
+            actions[0][j] = BasicAction.Delete;
+        }
 
-        for (int j = 1; j <= one.length(); j++) {
-            for (int i = 1; i <= two.length(); i++) {
+        for (int i = 1; i <= one.length(); i++) {
+            for (int j = 1; j <= two.length(); j++) {
 
-                boolean copyAllowed = (two.charAt(i - 1) == one.charAt(j - 1));
-                boolean twiddleAllowed = false;// (i > 2 && j > 2) && (two.charAt(i - 2) == one.charAt(j - 1)) && (two.charAt(i - 1) == one.charAt(j - 2));
+                boolean copyAllowed = (one.charAt(i - 1) == two.charAt(j - 1));
+                boolean twiddleAllowed = false;// (j > 2 && i > 2) && (two.charAt(j - 2) == one.charAt(i - 1)) && (two.charAt(j - 1) == one.charAt(i - 2));
 
                 // Which of these three is cheapest?
-                int insertCost = costs["Insert"] + computations[i - 1][j];
-                int deleteCost = costs["Delete"] + computations[i][j - 1];
+                int insertCost = costs["Insert"] + computations[i][j - 1];
+                int deleteCost = costs["Delete"] + computations[i - 1][j];
                 int replaceCost = costs["Replace"] + computations[i - 1][j - 1];
                 int copyCost = copyAllowed ? (costs["Copy"] + computations[i - 1][j - 1]) : Integer.MAX_VALUE;
                 int twiddleCost = twiddleAllowed ? (costs["Twiddle"] + computations[i - 2][j - 2]) : Integer.MAX_VALUE;
@@ -77,7 +76,7 @@ class AdvancedEditDistance {
             }
         }
 
-        [one: one, two: two, cost: computations[two.length()][one.length()], costs: costs, table: computations, actions: actions]
+        [one: one, two: two, cost: computations[one.length()][two.length()], costs: costs, table: computations, actions: actions]
     }
 
     /**
@@ -88,20 +87,20 @@ class AdvancedEditDistance {
         List<BasicAction> actions = new LinkedList<BasicAction>();
 
         // Start at the end result and work backwards.
-        int j = result.table[0].size() - 1;
         int i = result.table.size() - 1;
+        int j = result.table[0].size() - 1;
 
-        while (j > 0 && i > 0) {
+        while (i > 0 && j > 0) {
 
             // Push this action to the top of the "actions" stack.
             actions.add(0, result.actions[i][j]);
 
             switch (result.actions[i][j]) {
                 case BasicAction.Insert:
-                    i--;
+                    j--;
                     break;
                 case BasicAction.Delete:
-                    j--;
+                    i--;
                     break;
                 case BasicAction.Copy:
                 case BasicAction.Replace:
@@ -122,9 +121,9 @@ class AdvancedEditDistance {
      * Nicely prints a 2D array.
      */
     static void printTable(result) {
-        for (int i = 0; i < result.table.length; i++) {
-            for (int j = 0; j < result.table[0].length; j++)
-                System.out.print(String.format("%${13}s", "${result.actions[i][j]} (${result.table[i][j]})"));
+        for (int i = 0; i < result.table[0].length; i++) {
+            for (int j = 0; j < result.table.length; j++)
+                System.out.print(String.format("%${13}s", "${result.actions[j][i]} (${result.table[j][i]})"));
             System.out.println();
         }
     }
