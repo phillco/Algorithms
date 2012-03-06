@@ -22,12 +22,12 @@ class DnaAlignment extends AdvancedEditDistance {
         String two = result.two;
 
         int i = 0;
-        for (AdvancedEditDistance.BasicAction action: getListOfChanges(result)) {
+        for (Action action: getListOfChanges(result)) {
 
             // Deleting = insert space in two; inserting = insert space in one.
-            if (action == AdvancedEditDistance.BasicAction.Delete)
+            if (action == Action.Delete)
                 two = two.substring(0, i) + " " + two.substring(i);
-            else if (action == AdvancedEditDistance.BasicAction.Insert)
+            else if (action == Action.Insert)
                 one = one.substring(0, i) + " " + one.substring(i);
 
             i++;
@@ -37,8 +37,8 @@ class DnaAlignment extends AdvancedEditDistance {
     }
 
     static demonstrateDna() {
-        prettyPrintDna(computeLevenshteinDistance("ATGGCGT", "ATGAGT", dnaCosts));
-        prettyPrintDna(computeLevenshteinDistance("GATCGGCAT", "CAATGTGAATC", dnaCosts));
+        prettyPrintDna(computeEditDistance("ATGGCGT", "ATGAGT", dnaCosts));
+        prettyPrintDna(computeEditDistance("GATCGGCAT", "CAATGTGAATC", dnaCosts));
     }
 
     static void main(String[] args) { demonstrateDna() }

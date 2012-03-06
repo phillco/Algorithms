@@ -14,30 +14,30 @@ package algorithms
  */
 class AdvancedEditDistance {
 
-    public static final enum BasicAction {
+    public static final enum Action {
         Insert, Delete, Replace, Copy, Twiddle, Kill
     }
 
     static getBasicCosts() { ["Copy": 0, "Replace": 1, "Delete": 1, "Insert": 1, "Twiddle": 5, "Kill": 10] }
 
-    static getDefaultCosts() { ["Copy": 1, "Replace": 3, "Delete": 5, "Insert": 5, "Twiddle": 0, "Kill": 10] }
+    static getAdvancedCosts() { ["Copy": 1, "Replace": 3, "Delete": 5, "Insert": 5, "Twiddle": 0, "Kill": 10] }
 
     /**
      * Returns the minimum number of operations needed to change the string one into two.
      */
-    static def computeLevenshteinDistance(String one, String two, costs) {
+    static def computeEditDistance(String one, String two, costs) {
 
-        def actions = new BasicAction[one.length() + 1][two.length() + 1]
+        def actions = new Action[one.length() + 1][two.length() + 1]
         def computations = new int[one.length() + 1][two.length() + 1]
 
         // Prefix the special case for the first row and column.
         for (int i = 1; i <= one.length(); i++) {
             computations[i][0] = i * costs["Delete"];
-            actions[i][0] = BasicAction.Delete;
+            actions[i][0] = Action.Delete;
         }
         for (int j = 1; j <= two.length(); j++) {
             computations[0][j] = j * costs["Insert"];
-            actions[0][j] = BasicAction.Insert;
+            actions[0][j] = Action.Insert;
         }
 
         for (int i = 1; i <= one.length(); i++) {
@@ -58,19 +58,19 @@ class AdvancedEditDistance {
                 // Note what action we took in our adventurer's diary.
                 switch (computations[i][j]) {
                     case insertCost:
-                        actions[i][j] = BasicAction.Insert
+                        actions[i][j] = Action.Insert
                         break;
                     case deleteCost:
-                        actions[i][j] = BasicAction.Delete
+                        actions[i][j] = Action.Delete
                         break;
                     case replaceCost:
-                        actions[i][j] = BasicAction.Replace
+                        actions[i][j] = Action.Replace
                         break;
                     case copyCost:
-                        actions[i][j] = BasicAction.Copy
+                        actions[i][j] = Action.Copy
                         break;
                     case twiddleCost:
-                        actions[i][j] = BasicAction.Twiddle
+                        actions[i][j] = Action.Twiddle
                         break;
                 }
             }
@@ -86,7 +86,7 @@ class AdvancedEditDistance {
         // Is it worth it to kill?
         if (costs["Kill"] + computations[lowestIndex][two.length()] < computations[one.length()][two.length()]) {
             computations[one.length()][two.length()] = costs["Kill"] + computations[lowestIndex][two.length()]
-            actions[one.length()][two.length()] = BasicAction.Kill;
+            actions[one.length()][two.length()] = Action.Kill;
         }
 
         [one: one, two: two, cost: computations[one.length()][two.length()], costs: costs, table: computations, actions: actions]
@@ -95,9 +95,9 @@ class AdvancedEditDistance {
     /**
      * Given a costs matrix, returns the best (cheapest) list of operations by walking the table (backwards).
      */
-    static List<BasicAction> getListOfChanges(result) {
+    static List<Action> getListOfChanges(result) {
 
-        List<BasicAction> actions = new LinkedList<BasicAction>();
+        List<Action> actions = new LinkedList<Action>();
 
         // Start at the end result and work backwards.
         int i = result.table.size() - 1;
@@ -109,22 +109,22 @@ class AdvancedEditDistance {
             actions.add(0, result.actions[i][j]);
 
             switch (result.actions[i][j]) {
-                case BasicAction.Insert:
+                case Action.Insert:
                     j--;
                     break;
-                case BasicAction.Delete:
+                case Action.Delete:
                     i--;
                     break;
-                case BasicAction.Copy:
-                case BasicAction.Replace:
+                case Action.Copy:
+                case Action.Replace:
                     i--;
                     j--;
                     break;
-                case BasicAction.Twiddle:
+                case Action.Twiddle:
                     i -= 2;
                     j -= 2;
                     break;
-                case BasicAction.Kill:
+                case Action.Kill:
 
                     // A bit tricky. Back-track to find the cheapest value at the end of the substring; this is the cutoff point.
                     int lowestIndex = 1;
@@ -170,14 +170,14 @@ class AdvancedEditDistance {
      */
     static test() {
 
-        assert getListOfChanges(computeLevenshteinDistance("kitten", "sitting", basicCosts)) == [BasicAction.Replace, BasicAction.Copy, BasicAction.Copy, BasicAction.Copy, BasicAction.Replace, BasicAction.Copy, BasicAction.Insert]
-        assert getListOfChanges(computeLevenshteinDistance("Saturday", "Sunday", basicCosts)) == [BasicAction.Copy, BasicAction.Delete, BasicAction.Delete, BasicAction.Copy, BasicAction.Replace, BasicAction.Copy, BasicAction.Copy, BasicAction.Copy]
-        assert getListOfChanges(computeLevenshteinDistance("potc", "ptoc", defaultCosts)) == [BasicAction.Copy, BasicAction.Twiddle, BasicAction.Copy]
-        assert getListOfChanges(computeLevenshteinDistance("123pot", "a123pot", basicCosts)) == [BasicAction.Insert, BasicAction.Copy, BasicAction.Copy, BasicAction.Copy, BasicAction.Copy, BasicAction.Copy, BasicAction.Copy]
-        assert getListOfChanges(computeLevenshteinDistance("a123pot", "123pot", basicCosts)) == [BasicAction.Delete, BasicAction.Copy, BasicAction.Copy, BasicAction.Copy, BasicAction.Copy, BasicAction.Copy, BasicAction.Copy]
-        assert getListOfChanges(computeLevenshteinDistance("otp", "top", defaultCosts)) == [BasicAction.Twiddle, BasicAction.Copy];
-        assert getListOfChanges(computeLevenshteinDistance("ot", "to", defaultCosts)) == [BasicAction.Twiddle];
-        assert getListOfChanges(computeLevenshteinDistance("applesauce", "apple", defaultCosts)) == [BasicAction.Copy, BasicAction.Twiddle, BasicAction.Copy, BasicAction.Copy, BasicAction.Kill];
+        assert getListOfChanges(computeEditDistance("kitten", "sitting", basicCosts)) == [Action.Replace, Action.Copy, Action.Copy, Action.Copy, Action.Replace, Action.Copy, Action.Insert]
+        assert getListOfChanges(computeEditDistance("Saturday", "Sunday", basicCosts)) == [Action.Copy, Action.Delete, Action.Delete, Action.Copy, Action.Replace, Action.Copy, Action.Copy, Action.Copy]
+        assert getListOfChanges(computeEditDistance("potc", "ptoc", advancedCosts)) == [Action.Copy, Action.Twiddle, Action.Copy]
+        assert getListOfChanges(computeEditDistance("123pot", "a123pot", basicCosts)) == [Action.Insert, Action.Copy, Action.Copy, Action.Copy, Action.Copy, Action.Copy, Action.Copy]
+        assert getListOfChanges(computeEditDistance("a123pot", "123pot", basicCosts)) == [Action.Delete, Action.Copy, Action.Copy, Action.Copy, Action.Copy, Action.Copy, Action.Copy]
+        assert getListOfChanges(computeEditDistance("otp", "top", advancedCosts)) == [Action.Twiddle, Action.Copy];
+        assert getListOfChanges(computeEditDistance("ot", "to", advancedCosts)) == [Action.Twiddle];
+        assert getListOfChanges(computeEditDistance("applesauce", "apple", advancedCosts)) == [Action.Copy, Action.Twiddle, Action.Copy, Action.Copy, Action.Kill];
 
         println "== Tests passed! ==\n"
     }
@@ -186,9 +186,9 @@ class AdvancedEditDistance {
      * Demonstrates the algorithms.
      */
     static demonstrate() {
-        prettyPrint(computeLevenshteinDistance("kitten", "sitting", basicCosts));
-        prettyPrint(computeLevenshteinDistance("Saturday", "Sunday", basicCosts));
-        prettyPrint(computeLevenshteinDistance("applesauce", "apple", defaultCosts));
+        prettyPrint(computeEditDistance("kitten", "sitting", basicCosts));
+        prettyPrint(computeEditDistance("Saturday", "Sunday", basicCosts));
+        prettyPrint(computeEditDistance("applesauce", "apple", advancedCosts));
     }
 
     static void main(String[] args) { test(); demonstrate(); }
