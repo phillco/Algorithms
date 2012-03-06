@@ -47,7 +47,7 @@ class AdvancedEditDistance {
                 int copyCost = copyAllowed ? (costs["Copy"] + computations[i - 1][j - 1]) : Integer.MAX_VALUE;
                 int replaceCost = costs["Replace"] + computations[i - 1][j - 1];
 
-                int replacementCost = computations[i][j] = fourWayMin(insertCost, deletionCost, copyCost, replaceCost)
+                int replacementCost = computations[i][j] = [insertCost, deletionCost, copyCost, replaceCost].min();
             }
         }
 
@@ -70,7 +70,7 @@ class AdvancedEditDistance {
             // Determine which edit was made by seeing which neighbor (insert, delete, modify/skip) is cheapest.
             // Then push this action to the top of the "actions" stack.
                         
-            def cheapestNeighbor = threeWayMin(result.table[i - 1][j], result.table[i][j - 1], result.table[i - 1][j - 1])
+            def cheapestNeighbor = [result.table[i - 1][j], result.table[i][j - 1], result.table[i - 1][j - 1]].min()
 
             if (cheapestNeighbor == result.table[i - 1][j]) { // Insert
                 actions.add(0, BasicAction.Insert);
@@ -108,16 +108,7 @@ class AdvancedEditDistance {
     /**
      * Returns the mininum of the given three numbers.
      */
-    static int threeWayMin(first, second, third) {
-        return (int) Math.min(Math.min(first, second), third);
-    }
-
-    /**
-     * Returns the mininum of the given four numbers.
-     */
-    static int fourWayMin(first, second, third, fourth) {
-        return (int) Math.min(Math.min(Math.min(first, second), third), fourth);
-    }
+    static int min(Integer... values) { values?.min() }
 
     /**
      * Tests all the algorithms.

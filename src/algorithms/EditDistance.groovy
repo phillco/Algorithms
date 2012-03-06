@@ -33,7 +33,7 @@ class EditDistance {
                 int additionCost = computations[i][j - 1] + 1;
                 int replacementCost = computations[i - 1][j - 1] + ((two.charAt(i - 1) == one.charAt(j - 1)) ? 0 : 1);
 
-                computations[i][j] = threeWayMin(additionCost, deletionCost, replacementCost)
+                computations[i][j] = [additionCost, deletionCost, replacementCost].min()
             }
         }
 
@@ -55,7 +55,7 @@ class EditDistance {
 
             // Determine which edit was made by seeing which neighbor (insert, delete, modify/skip) is cheapest.
             // Then push this action to the top of the "actions" stack.
-            def cheapestNeighbor = threeWayMin(result.table[i - 1][j], result.table[i][j - 1], result.table[i - 1][j - 1])
+            def cheapestNeighbor = [result.table[i - 1][j], result.table[i][j - 1], result.table[i - 1][j - 1]].min()
             if (cheapestNeighbor == result.table[i - 1][j]) { // Insert
                 actions.add(0, BasicAction.Insert);
                 i--;
@@ -87,13 +87,6 @@ class EditDistance {
         println();
 
         println "Actions to take: " + getListOfChanges(result).join(", ") + ".\n"
-    }
-
-    /**
-     * Returns the mininum of the given three numbers.
-     */
-    static int threeWayMin(first, second, third) {
-        return (int) Math.min(Math.min(first, second), third);
     }
 
     /**
