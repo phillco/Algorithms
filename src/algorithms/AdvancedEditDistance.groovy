@@ -15,12 +15,12 @@ package algorithms
 class AdvancedEditDistance {
 
     static enum BasicAction {
-        Insert, Delete, Replace, Copy, Twiddle, Kill
+        Dummmy, Insert, Delete, Replace, Copy, Twiddle, Kill
     }
 
 
     static getDefaultCosts() {
-        ["Copy": 0, "Replace": 2, "Delete": 5, "Insert": 5, "Twiddle": 0, "Kill": 7]
+        ["Copy": 0, "Replace": 1, "Delete": 1, "Insert": 1, "Twiddle": 10, "Kill": 7]
     }
 
     /**
@@ -28,32 +28,56 @@ class AdvancedEditDistance {
      */
     static def computeLevenshteinDistance(String one, String two, costs) {
 
+        def actions = new BasicAction[two.length() + 1][one.length() + 1]
         def computations = new int[two.length() + 1][one.length() + 1]
 
         // Prefix the special case for the first row and column.
-        for (int j = 1; j <= one.length(); j++)
+        for (int j = 1; j <= one.length(); j++) {
             computations[0][j] = j * costs["Delete"];
-        for (int i = 1; i <= two.length(); i++)
+            actions[0][j] = BasicAction.Delete;
+        }
+        for (int i = 1; i <= two.length(); i++) {
             computations[i][0] = i * costs["Insert"];
+            actions[i][0] = BasicAction.Insert;
+        }
 
         for (int j = 1; j <= one.length(); j++) {
             for (int i = 1; i <= two.length(); i++) {
 
                 boolean copyAllowed = (two.charAt(i - 1) == one.charAt(j - 1));
-                boolean twiddleAllowed = (i > 2 && j > 2) && (two.charAt(i - 2) == one.charAt(j - 1)) && (two.charAt(i - 1) == one.charAt(j - 2));
+                boolean twiddleAllowed = false;// (i > 2 && j > 2) && (two.charAt(i - 2) == one.charAt(j - 1)) && (two.charAt(i - 1) == one.charAt(j - 2));
 
                 // Which of these three is cheapest?
-                int deletionCost = costs["Delete"] + computations[i - 1][j];
-                int insertCost = costs["Insert"] + computations[i][j - 1];
+                int insertCost = costs["Insert"] + computations[i - 1][j];
+                int deleteCost = costs["Delete"] + computations[i][j - 1];
                 int replaceCost = costs["Replace"] + computations[i - 1][j - 1];
                 int copyCost = copyAllowed ? (costs["Copy"] + computations[i - 1][j - 1]) : Integer.MAX_VALUE;
                 int twiddleCost = twiddleAllowed ? (costs["Twiddle"] + computations[i - 2][j - 2]) : Integer.MAX_VALUE;
 
-                computations[i][j] = [insertCost, deletionCost, copyCost, replaceCost, twiddleCost].min();
+                computations[i][j] = [deleteCost, insertCost, copyCost, replaceCost, twiddleCost].min();
+
+                // Note what action we took in our adventurer's diary.
+                switch (computations[i][j]) {
+                    case insertCost:
+                        actions[i][j] = BasicAction.Insert
+                        break;
+                    case deleteCost:
+                        actions[i][j] = BasicAction.Delete
+                        break;
+                    case replaceCost:
+                        actions[i][j] = BasicAction.Replace
+                        break;
+                    case copyCost:
+                        actions[i][j] = BasicAction.Copy
+                        break;
+                    case twiddleCost:
+                        actions[i][j] = BasicAction.Twiddle
+                        break;
+                }
             }
         }
 
-        [one: one, two: two, cost: computations[two.length()][one.length()], costs: costs, table: computations]
+        [one: one, two: two, cost: computations[two.length()][one.length()], costs: costs, table: computations, actions: actions]
     }
 
     /**
@@ -69,27 +93,25 @@ class AdvancedEditDistance {
 
         while (j > 0 && i > 0) {
 
-            // Determine which edit was made by seeing which neighbor (insert, delete, modify/skip) is cheapest.
-            // Then push this action to the top of the "actions" stack.
-                        
-            def cheapestNeighbor = [result.table[i - 1][j], result.table[i][j - 1], result.table[i - 1][j - 1]].min()
+            // Push this action to the top of the "actions" stack.
+            actions.add(0, result.actions[i][j]);
 
-            if (cheapestNeighbor == result.table[i - 1][j]) { // Insert
-                actions.add(0, BasicAction.Insert);
-                i--;
-            } else if (cheapestNeighbor == result.table[i][j - 1]) { // Delete
-                actions.add(0, BasicAction.Delete);
-                j--;
-            } else { // Replace
-
-                // Was it a replacement, or just a skip?
-                if (result.table[i][j] == result.costs["Copy"] + result.table[i - 1][j - 1])
-                    actions.add(0, BasicAction.Copy);
-                else
-                    actions.add(0, BasicAction.Replace);
-
-                j--;
-                i--;
+            switch (result.actions[i][j]) {
+                case BasicAction.Insert:
+                    i--;
+                    break;
+                case BasicAction.Delete:
+                    j--;
+                    break;
+                case BasicAction.Copy:
+                case BasicAction.Replace:
+                    i--;
+                    j--;
+                    break;
+                case BasicAction.Twiddle:
+                    i -= 2;
+                    j -= 2;
+                    break;
             }
         }
 
@@ -97,14 +119,23 @@ class AdvancedEditDistance {
     }
 
     /**
+     * Nicely prints a 2D array.
+     */
+    static void printTable(result) {
+        for (int i = 0; i < result.table.length; i++) {
+            for (int j = 0; j < result.table[0].length; j++)
+                System.out.print(String.format("%${13}s", "${result.actions[i][j]} (${result.table[i][j]})"));
+            System.out.println();
+        }
+    }
+
+    /**
      * Nicely prints the results of a calculation.
      */
     static prettyPrint(result) {
         println "Cost for changing \"${result.one}\" to \"${result.two}\" is ${result.cost}:"
-        MatrixChaining.print2dArray(result.table, 3);
-        println();
-
-        println "Actions to take: " + getListOfChanges(result).join(", ") + ".\n"
+        printTable(result);
+        println "\nActions to take: " + getListOfChanges(result).join(", ") + ".\n"
     }
 
     /**
