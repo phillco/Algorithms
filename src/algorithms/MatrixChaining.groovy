@@ -24,6 +24,7 @@ class MatrixChaining {
 
         def cost = new int[dimensions.size()][dimensions.size()]
         def cutPoints = new int[dimensions.size()][dimensions.size()]
+        def accessCount = new int[dimensions.size()][dimensions.size()]
 
         // Test all possible chain sizes from 2 to the size of all the dimensions.
         for (int chainSize = 2; chainSize <= dimensions.length - 1; chainSize++) {
@@ -32,6 +33,7 @@ class MatrixChaining {
 
                 int right = left + chainSize - 1;
                 cost[left][right] = Integer.MAX_VALUE;
+                accessCount[left][right]++;
 
                 // Test all possible split points.
                 for (int splitPoint = left; splitPoint < right; splitPoint++) {
@@ -40,16 +42,21 @@ class MatrixChaining {
                     // This is equal to the costs of the left and right side, PLUS the cost to combine the two. (Which will be a multiplication itself.)
                     int potentialCost = cost[left][splitPoint] + cost[splitPoint + 1][right] + (dimensions[left - 1] * dimensions[splitPoint] * dimensions[right]);
 
+                    accessCount[left][splitPoint]++;
+                    accessCount[splitPoint + 1][right]++;
+
                     // Is it better than the cost we already have?
+                    accessCount[left][right]++;
                     if (potentialCost < cost[left][right]) {
                         cost[left][right] = potentialCost;
+                        accessCount[left][right]++;
                         cutPoints[left][right] = splitPoint;
                     }
                 }
             }
         }
 
-        return [cost: cost, cutPoints: cutPoints]
+        return [cost: cost, cutPoints: cutPoints, accessCount: accessCount]
     }
 
     /**
@@ -113,8 +120,11 @@ class MatrixChaining {
         println "\nCut points table (s):"
         print2dArray(results.cutPoints, 8)
 
+        println "\nAccess counts:"
+        print2dArray(results.accessCount, 8)
+
         // Test the multiplication.
-        matrixChainMultiply(dimensions, results.cutPoints, 1, dimensions.length);
+     //   matrixChainMultiply(dimensions, results.cutPoints, 1, dimensions.length);
     }
 
     /**
