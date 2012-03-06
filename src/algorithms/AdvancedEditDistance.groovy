@@ -14,7 +14,7 @@ package algorithms
  */
 class AdvancedEditDistance {
 
-    static enum BasicAction {
+    public static final enum BasicAction {
         Insert, Delete, Replace, Copy, Twiddle, Kill
     }
 
