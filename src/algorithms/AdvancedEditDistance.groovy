@@ -143,12 +143,23 @@ class AdvancedEditDistance {
     static int min(Integer... values) { values?.min() }
 
     /**
-     * Tests all the algorithms.
+     * Tests the algorithms.
      */
     static test() {
+
+        assert getListOfChanges(computeLevenshteinDistance("kitten", "sitting", defaultCosts)) == [BasicAction.Replace, BasicAction.Copy, BasicAction.Copy, BasicAction.Copy, BasicAction.Replace, BasicAction.Copy, BasicAction.Insert]
+        assert getListOfChanges(computeLevenshteinDistance("Saturday", "Sunday", defaultCosts)) == [BasicAction.Copy, BasicAction.Delete, BasicAction.Delete, BasicAction.Copy, BasicAction.Replace, BasicAction.Copy, BasicAction.Copy, BasicAction.Copy]
+
+        println "== Tests passed! ==\n"
+    }
+    
+    /**
+     * Demonstrates the algorithms.
+     */
+    static demonstrate() {
         prettyPrint(computeLevenshteinDistance("kitten", "sitting", defaultCosts));
         prettyPrint(computeLevenshteinDistance("Saturday", "Sunday", defaultCosts));
     }
 
-    static void main(String[] args) { test(); }
+    static void main(String[] args) { test(); demonstrate(); }
 }
