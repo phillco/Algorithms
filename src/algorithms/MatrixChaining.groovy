@@ -79,10 +79,10 @@ class MatrixChaining {
     static void print2dArray(array, int spacing) {
         for (int i = 0; i < array.length; i++) {
             for (int j = 0; j < array[0].length; j++) {
-                if (array[i][j])
+//                if (array[i][j])
                     System.out.print(String.format("%${spacing}s", array[i][j]));
-                else
-                    System.out.print(String.format("%${spacing}s", " "));
+//                else
+//                    System.out.print(String.format("%${spacing}s", " "));
             }
             System.out.println();
         }
