@@ -6,8 +6,13 @@ package algorithms
  */
 class EditDistance {
 
+    static enum BasicAction {
+        Insert, Delete, Replace, Skip
+    }
+
     /**
-     * Prints the list of (cheapest) operations needed to change one into two.
+     * Returns the minimum number of operations needed to change the string one into two.
+     * Supports these operations: Insert, Delete, Replace, Skip.
      */
     static def computeLevenshteinDistance(String one, String two) {
 
@@ -22,9 +27,12 @@ class EditDistance {
         for (int j = 1; j <= one.length(); j++) {
             for (int i = 1; i <= two.length(); i++) {
 
-                int replacementCost = (two.charAt(i - 1) == one.charAt(j - 1)) ? 0 : 1;
+                // Which of these three is cheapest?
+                int deletionCost = computations[i - 1][j] + 1;
+                int additionCost = computations[i][j - 1] + 1;
+                int replacementCost = computations[i - 1][j - 1] + ((two.charAt(i - 1) == one.charAt(j - 1)) ? 0 : 1);
 
-                computations[i][j] = threeWayMin(computations[i - 1][j] + 1, computations[i][j - 1] + 1, computations[i - 1][j - 1] + replacementCost)
+                computations[i][j] = threeWayMin(additionCost, deletionCost, replacementCost)
             }
         }
 
@@ -32,19 +40,59 @@ class EditDistance {
     }
 
     /**
-     * Returns the mininum of the given three numbers.
+     * Given a costs matrix, returns the best (cheapest) list of operations by walking the table (backwards).
      */
-    static int threeWayMin(first, second, third) {
-        return (int) Math.min(Math.min(first, second), third);
+    static List<BasicAction> getListOfChanges(result) {
+
+        List<BasicAction> actions = new LinkedList<BasicAction>();
+
+        // Start at the end result and work backwards.
+        int j = result.table[0].size() - 1;
+        int i = result.table.size() - 1;
+
+        while (j > 0 && i > 0) {
+
+            // Determine which edit was made by seeing which neighbor (insert, delete, modify/skip) is cheapest.
+            // Then push this action to the top of the "actions" stack.
+            def cheapestNeighbor = threeWayMin(result.table[i - 1][j], result.table[i][j - 1], result.table[i - 1][j - 1])
+            if (cheapestNeighbor == result.table[i - 1][j]) { // Insert
+                actions.add(0, BasicAction.Insert);
+                i--;
+            } else if (cheapestNeighbor == result.table[i][j - 1]) { // Delete
+                actions.add(0, BasicAction.Delete);
+                j--;
+            } else { // Replace
+
+                // Was it a replacement, or just a skip?
+                if (result.table[i - 1][j - 1] == result.table[i][j])
+                    actions.add(0, BasicAction.Skip);
+                else
+                    actions.add(0, BasicAction.Replace);
+
+                j--;
+                i--;
+            }
+        }
+
+        return actions;
     }
 
     /**
      * Nicely prints the results of a calculation.
      */
     static prettyPrint(result) {
-        println "Cost for changing ${result.one} to ${result.two} is ${result.cost}:"
+        println "Cost for changing \"${result.one}\" to \"${result.two}\" is ${result.cost}:"
         MatrixChaining.print2dArray(result.table, 3);
         println();
+
+        println "Actions to take: " + getListOfChanges(result).join(", ") + ".\n"
+    }
+
+    /**
+     * Returns the mininum of the given three numbers.
+     */
+    static int threeWayMin(first, second, third) {
+        return (int) Math.min(Math.min(first, second), third);
     }
 
     /**
