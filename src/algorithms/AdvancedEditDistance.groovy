@@ -19,7 +19,7 @@ class AdvancedEditDistance {
     }
 
     static getDefaultCosts() {
-        ["Copy": 0, "Replace": 1, "Delete": 1, "Insert": 1, "Twiddle": 10, "Kill": 7]
+        ["Copy": 1, "Replace": 3, "Delete": 5, "Insert": 5, "Twiddle": 0, "Kill": 7]
     }
 
     /**
@@ -44,7 +44,7 @@ class AdvancedEditDistance {
             for (int j = 1; j <= two.length(); j++) {
 
                 boolean copyAllowed = (one.charAt(i - 1) == two.charAt(j - 1));
-                boolean twiddleAllowed = false;// (j > 2 && i > 2) && (two.charAt(j - 2) == one.charAt(i - 1)) && (two.charAt(j - 1) == one.charAt(i - 2));
+                boolean twiddleAllowed = (i > 2 && j > 2) && (one.charAt(i - 1) == two.charAt(j - 2)) && (one.charAt(i - 2) == two.charAt(j - 1));
 
                 // Which of these three is cheapest?
                 int insertCost = costs["Insert"] + computations[i][j - 1];
@@ -147,18 +147,20 @@ class AdvancedEditDistance {
      */
     static test() {
 
-        assert getListOfChanges(computeLevenshteinDistance("kitten", "sitting", defaultCosts)) == [BasicAction.Replace, BasicAction.Copy, BasicAction.Copy, BasicAction.Copy, BasicAction.Replace, BasicAction.Copy, BasicAction.Insert]
-        assert getListOfChanges(computeLevenshteinDistance("Saturday", "Sunday", defaultCosts)) == [BasicAction.Copy, BasicAction.Delete, BasicAction.Delete, BasicAction.Copy, BasicAction.Replace, BasicAction.Copy, BasicAction.Copy, BasicAction.Copy]
+        assert getListOfChanges(computeLevenshteinDistance("kitten", "sitting", ["Copy": 0, "Replace": 1, "Delete": 1, "Insert": 1, "Twiddle": 10, "Kill": 7])) == [BasicAction.Replace, BasicAction.Copy, BasicAction.Copy, BasicAction.Copy, BasicAction.Replace, BasicAction.Copy, BasicAction.Insert]
+        assert getListOfChanges(computeLevenshteinDistance("Saturday", "Sunday", ["Copy": 0, "Replace": 1, "Delete": 1, "Insert": 1, "Twiddle": 10, "Kill": 7])) == [BasicAction.Copy, BasicAction.Delete, BasicAction.Delete, BasicAction.Copy, BasicAction.Replace, BasicAction.Copy, BasicAction.Copy, BasicAction.Copy]
+        assert getListOfChanges(computeLevenshteinDistance("potc", "ptoc", ["Copy": 1, "Replace": 3, "Delete": 5, "Insert": 5, "Twiddle": 0, "Kill": 7])) == [BasicAction.Copy, BasicAction.Twiddle, BasicAction.Copy]
 
         println "== Tests passed! ==\n"
     }
-    
+
     /**
      * Demonstrates the algorithms.
      */
     static demonstrate() {
         prettyPrint(computeLevenshteinDistance("kitten", "sitting", defaultCosts));
         prettyPrint(computeLevenshteinDistance("Saturday", "Sunday", defaultCosts));
+        prettyPrint(computeLevenshteinDistance("potc", "ptoc", defaultCosts));
     }
 
     static void main(String[] args) { test(); demonstrate(); }
