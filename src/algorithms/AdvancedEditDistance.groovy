@@ -18,9 +18,9 @@ class AdvancedEditDistance {
         Insert, Delete, Replace, Copy, Twiddle, Kill
     }
 
-    static getBasicCosts() { ["Copy": 0, "Replace": 1, "Delete": 1, "Insert": 1, "Twiddle": 5, "Kill": 7] }
+    static getBasicCosts() { ["Copy": 0, "Replace": 1, "Delete": 1, "Insert": 1, "Twiddle": 5, "Kill": 10] }
 
-    static getDefaultCosts() { ["Copy": 1, "Replace": 3, "Delete": 5, "Insert": 5, "Twiddle": 0, "Kill": 7] }
+    static getDefaultCosts() { ["Copy": 1, "Replace": 3, "Delete": 5, "Insert": 5, "Twiddle": 0, "Kill": 10] }
 
     /**
      * Returns the minimum number of operations needed to change the string one into two.
@@ -76,6 +76,19 @@ class AdvancedEditDistance {
             }
         }
 
+        // Search for the cheapest cut-off point for killing.
+        int lowestIndex = 1;
+        for (int i = 1; i < one.length(); i++) {
+            if (computations[i][two.length()] < computations[lowestIndex][two.length()])
+                lowestIndex = i;
+        }
+
+        // Is it worth it to kill?
+        if (costs["Kill"] + computations[lowestIndex][two.length()] < computations[one.length()][two.length()]) {
+            computations[one.length()][two.length()] = costs["Kill"] + computations[lowestIndex][two.length()]
+            actions[one.length()][two.length()] = BasicAction.Kill;
+        }
+
         [one: one, two: two, cost: computations[one.length()][two.length()], costs: costs, table: computations, actions: actions]
     }
 
@@ -110,6 +123,16 @@ class AdvancedEditDistance {
                 case BasicAction.Twiddle:
                     i -= 2;
                     j -= 2;
+                    break;
+                case BasicAction.Kill:
+
+                    // A bit tricky. Back-track to find the cheapest value at the end of the substring; this is the cutoff point.
+                    int lowestIndex = 1;
+                    for (int k = 1; k < result.table.size(); k++) {
+                        if (result.table[k][result.table[0].length - 1] < result.table[lowestIndex][result.table[0].length - 1])
+                            lowestIndex = k;
+                    }
+                    i = lowestIndex;
                     break;
             }
         }
@@ -154,6 +177,7 @@ class AdvancedEditDistance {
         assert getListOfChanges(computeLevenshteinDistance("a123pot", "123pot", basicCosts)) == [BasicAction.Delete, BasicAction.Copy, BasicAction.Copy, BasicAction.Copy, BasicAction.Copy, BasicAction.Copy, BasicAction.Copy]
         assert getListOfChanges(computeLevenshteinDistance("otp", "top", defaultCosts)) == [BasicAction.Twiddle, BasicAction.Copy];
         assert getListOfChanges(computeLevenshteinDistance("ot", "to", defaultCosts)) == [BasicAction.Twiddle];
+        assert getListOfChanges(computeLevenshteinDistance("applesauce", "apple", defaultCosts)) == [BasicAction.Copy, BasicAction.Twiddle, BasicAction.Copy, BasicAction.Copy, BasicAction.Kill];
 
         println "== Tests passed! ==\n"
     }
@@ -162,10 +186,9 @@ class AdvancedEditDistance {
      * Demonstrates the algorithms.
      */
     static demonstrate() {
-        prettyPrint(computeLevenshteinDistance("kitten", "sitting", defaultCosts));
-        prettyPrint(computeLevenshteinDistance("Saturday", "Sunday", defaultCosts));
-        prettyPrint(computeLevenshteinDistance("potc", "ptoc", defaultCosts));
-
+        prettyPrint(computeLevenshteinDistance("kitten", "sitting", basicCosts));
+        prettyPrint(computeLevenshteinDistance("Saturday", "Sunday", basicCosts));
+        prettyPrint(computeLevenshteinDistance("applesauce", "apple", defaultCosts));
     }
 
     static void main(String[] args) { test(); demonstrate(); }
