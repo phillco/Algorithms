@@ -20,7 +20,7 @@ class AdvancedEditDistance {
 
 
     static getDefaultCosts() {
-        ["Copy": 0, "Replace": 2, "Delete": 5, "Insert": 5, "Twiddle": 7, "Kill": 7]
+        ["Copy": 0, "Replace": 2, "Delete": 5, "Insert": 5, "Twiddle": 0, "Kill": 7]
     }
 
     /**
@@ -40,14 +40,16 @@ class AdvancedEditDistance {
             for (int i = 1; i <= two.length(); i++) {
 
                 boolean copyAllowed = (two.charAt(i - 1) == one.charAt(j - 1));
+                boolean twiddleAllowed = (i > 2 && j > 2) && (two.charAt(i - 2) == one.charAt(j - 1)) && (two.charAt(i - 1) == one.charAt(j - 2));
 
                 // Which of these three is cheapest?
                 int deletionCost = costs["Delete"] + computations[i - 1][j];
                 int insertCost = costs["Insert"] + computations[i][j - 1];
-                int copyCost = copyAllowed ? (costs["Copy"] + computations[i - 1][j - 1]) : Integer.MAX_VALUE;
                 int replaceCost = costs["Replace"] + computations[i - 1][j - 1];
+                int copyCost = copyAllowed ? (costs["Copy"] + computations[i - 1][j - 1]) : Integer.MAX_VALUE;
+                int twiddleCost = twiddleAllowed ? (costs["Twiddle"] + computations[i - 2][j - 2]) : Integer.MAX_VALUE;
 
-                int replacementCost = computations[i][j] = [insertCost, deletionCost, copyCost, replaceCost].min();
+                computations[i][j] = [insertCost, deletionCost, copyCost, replaceCost, twiddleCost].min();
             }
         }
 
