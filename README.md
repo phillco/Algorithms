@@ -1,11 +1,10 @@
-Algorithms
-==========
-
 ![Algorithms](http://www.cs.pitt.edu/~kirk/cs2150/CLRS3e-cover.jpg)
 
-This project contains lots of [Groovy](http://groovy.codehaus.org) implementations of various problems and algorithms from [Introduction to Algorithms](http://en.wikipedia.org/wiki/Introduction_to_Algorithms) by Cormen, Leiserson, Rivest, Stein (CLRS).
+This project contains lots of [Groovy](http://groovy.codehaus.org) implementations of various problems and algorithms from [Introduction to Algorithms by Cormen, Leiserson, Rivest, Stein](http://en.wikipedia.org/wiki/Introduction_to_Algorithms) (CLRS).
 
-The idea is to create clean, readable, and runnable versions of the algorithms presented. It's easier to learn an algorithm when you can step through it line by line with a debugger, or refactor the one-character variables into something more readable.
+The idea is to create clean, readable, and runnable versions of the algorithms presented. It's easier to learn an algorithm when you can step through it line by line with a debugger, or refactor the one-character variable names around.
+
+All algorithms are thoroughly commented and grouped by functionality.
 
 Enjoy!
 
