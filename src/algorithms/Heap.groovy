@@ -1,10 +1,13 @@
 package algorithms
 
 /**
- * Represents a heap stored within a Java array.
+ * Represents a heap stored within a Java array list.
  *
- * The heap property: every node is greater (min-heap) or less than (max-heap) its parent.
- * Here we represent a max-heap (where the root is always the biggest element).
+ * The heap property: every node is greater (minheap) or less than (maxheap) its parent.
+ * Here we represent a maxheap (where the root is always the biggest element).
+ *
+ * IMPORTANT: The book uses 1-based indexing (A[1] is the root). For consistency, we use
+ * the same notation -- this means that A[0] is allocated but not used.
  *
  * @see "Algorithms", Ch 6-1 to 6-3, "Heaps"
  */
@@ -14,6 +17,8 @@ class Heap {
      * Given the unsorted list A, turns it into a heap.
      */
     static void turnIntoHeap(List A) {
+        assert A[0] == 0 // See "important" above -- just make sure nothing's in A[0]
+
         for (int i: (A.size() / 2..1)) // Start at floor(max/2) and move left.
             heapify(A, i);
     }
