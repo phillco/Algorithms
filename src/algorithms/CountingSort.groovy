@@ -10,7 +10,7 @@ package algorithms
  * to count each type. [It uses O(k) extra memory where k is the number of possible values.] It does well
  * for sorting a large amount of data spread over a few distinct keys. (Eg, sorting students by classification.)
  *
- * Note, this is usually more useful if the keys have extra data attached to them.
+ * Note, this is usually more useful if the keys have extra data attached to them. (See simplerSort below)
  *
  * @see "Algorithms", Chapter 8-2, "Sorting in Linear Time"
  */
@@ -23,7 +23,7 @@ class CountingSort {
      */
     static int[] sort(int[] inputArray, int[] outputArray, maxKey) {
 
-        int[] countArray = new int[maxKey+1]; // Include 0
+        int[] countArray = new int[maxKey + 1]; // Include 0
 
         // First, count the number of occurrences of each number. So countArray[i] will be the number of times that "i" occurs.
         inputArray.each { value ->
@@ -43,6 +43,32 @@ class CountingSort {
         inputArray.each { value ->
             outputArray[countArray[value]] = value;
             countArray[value]++; // Place the next occurrence of this number one index over.
+        }
+    }
+
+    /**
+     * An even simpler (but unstable) version that works when there's no extra data attached to the integers.
+     *
+     * Instead of rearranging the original input into the output, we just count the number of occurrences of each
+     * type of value and then insert that number of values into the output array.
+     */
+    static int[] simplerSort(int[] inputArray, int[] outputArray, maxKey) {
+
+        int[] countArray = new int[maxKey + 1]; // Include 0
+
+        // First, count the number of occurrences of each number. So countArray[i] will be the number of times that "i" occurs.
+        inputArray.each { value ->
+            countArray[value]++;
+        }
+
+        // Fill the output with the values, in order.
+        int outputPosition = 0;
+        countArray.eachWithIndex { count, n ->
+
+            // Instead the value "n" count times. (count is countArray[n])
+            count.times {
+                outputArray[outputPosition++] = n;
+            }
         }
     }
 
