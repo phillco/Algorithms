@@ -3,27 +3,30 @@ package algorithms
 /**
  * Implements a heap sort using the Heap class.
  *
+ * @see Heap
  * @see "Algorithms", Ch 6-4, "The Heapsort Algorithm"
  */
 class HeapSort {
 
     /**
-     * Returns a sorted version of the given list.
+     * Sorts the given list in-place using a heapsort.
+     * First it heapifies the array, in-place.
+     * Then it turns it back into a list, by repeatedly moving the biggest elements to the back and re-heaping until the heap is gone.
+     *
+     * O(nlgn)
      */
-    static def heapSort(List data) {
-        Heap.turnIntoHeap(data);
+    static def heapSort(Object[] data) {
+        Heap.HeapArray A = Heap.turnIntoHeap(data);
 
-        // This is junk: we have to track the results separately because we do not have a separate A.heap-size property.
-        LinkedList sorted = []
-        for (int i: (data.size()-1..2)) {
+        for (int i: (A.data.length - 1..2)) {
 
-            sorted.addFirst(data[1]);
-            Util.swap(data, 1, i);
-            data.remove(data.size() - 1)
-            Heap.heapify(data, 1);
+            // Move the biggest element (A[1]) to the end.
+            Util.swap(A.data, 1, i);
+            A.heapSize--; // And out of the jurisdiction of the heap.
+
+            // Fix any unheaping that occurred by moving A[i] to the front.
+            Heap.heapify(A, 1);
         }
-
-        return sorted;
     }
 
 }

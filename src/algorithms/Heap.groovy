@@ -15,13 +15,16 @@ package algorithms
 class Heap {
 
     /**
-     * Given the unsorted list A, turns it into a heap.
+     * Given the unsorted data, turns it into a heap.
      */
-    static void turnIntoHeap(List A) {
-        assert A[0] == 0 // See "important" above -- just make sure nothing's in A[0]
-
-        for (int i: (A.size() / 2..1)) // Start at floor(max/2) and move left.
+    static HeapArray turnIntoHeap(Object[] data) {
+        assert data[0] == 0 // Ensure 1-based numbering (see "important" above)
+        
+        HeapArray A = HeapArray.wrap(data); // Wrap the data so we can have the heapSize property.
+        for (int i: (A.data.length / 2..1)) // Start at floor(max/2) and move left.
             heapify(A, i);
+        
+        return A;
     }
 
     /**
@@ -33,13 +36,13 @@ class Heap {
      *
      * O(lg n)
      */
-    static void heapify(List A, int i) {
+    static void heapify(HeapArray A, int i) {
 
         int largest = getLargestOfFamily(A, i);
 
         // If either child is larger than us, swap with them.
         if (largest != i) {
-            Util.swap(A, i, largest);
+            Util.swap(A.data, i, largest);
             heapify(A, largest); // And keep swapping until the heap is fixed
         }
     }
@@ -47,16 +50,16 @@ class Heap {
     /**
      * Finds which is the biggest: this node, its left child, or its right child. Returns the index of the biggest.
      */
-    static int getLargestOfFamily(A, i) {
+    static int getLargestOfFamily(HeapArray A, i) {
 
         int largest = i;
 
         // Is the left child bigger?
-        if (hasLeft(A, i) && A[left(i)] > A[i])
+        if (hasLeft(A, i) && A.data[left(i)] > A.data[i])
             largest = left(i);
 
         // Is the right child bigger?
-        if (hasRight(A, i) && A[right(i)] > A[largest])
+        if (hasRight(A, i) && A.data[right(i)] > A.data[largest])
             largest = right(i);
 
         return largest;
@@ -66,9 +69,9 @@ class Heap {
     // Utility functions
     //==========================
 
-    static boolean hasLeft(A, index) { return left(index) < A.size() }
+    static boolean hasLeft(A, index) { return left(index) < A.heapSize }
 
-    static boolean hasRight(A, index) { return right(index) < A.size() }
+    static boolean hasRight(A, index) { return right(index) < A.heapSize }
 
     static int parent(int i) { i / 2 } // Normally a >> shift
 
@@ -76,4 +79,15 @@ class Heap {
 
     static int right(int i) { left(i) + 1 }
 
+    /**
+     * A simple wrapper class so we can add the heapSize property to the array.
+     */
+    static class HeapArray {
+
+        Object[] data
+
+        int heapSize
+
+        static HeapArray wrap(Object[] data) { new HeapArray( data: data, heapSize: data.length ) }
+    }
 }
