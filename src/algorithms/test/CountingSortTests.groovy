@@ -3,23 +3,25 @@ package algorithms.test
 import algorithms.CountingSort
 
 /**
- * Tests counting sort.
+ * Tests counting sort and simplerSort().
  */
 class CountingSortTests extends GroovyTestCase {
 
     def testCountingSort() {
 
-        def data = [4, 8, 9, 2, 0, 9, 7, 2]
-        
-        def input = new int[data.size()];
-        def output = new int[data.size()];
+        def testCases = SortTestUtils.getTestCases(20, 5000, 500);
 
-        data.eachWithIndex { val, i -> input[i] = val }
-        
-        CountingSort.sort(input, output, data.max());
-        
-        assert input == [4, 8, 9, 2, 0, 9, 7, 2]
-        assert output == [0, 2, 2, 4, 7, 8, 9, 9];
+        testCases.each { testCase ->
+
+            def outputOne = new int[testCase.input.length];
+            def outputTwo = new int[testCase.input.length];
+
+            CountingSort.sort(testCase.input, outputOne, 500);
+            CountingSort.simplerSort(testCase.input, outputTwo, 500);
+
+            assert outputOne == testCase.reference;
+            assert outputTwo == testCase.reference;
+        }
     }
 
 
