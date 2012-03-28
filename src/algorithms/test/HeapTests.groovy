@@ -10,17 +10,19 @@ class HeapTests extends GroovyTestCase {
 
     def testTurnIntoHeap() {
 
-        def list = [0, 4, 8, 9, 2, 0, 9, 7, 2].toArray()
+        getTestCases(20).each { testCase ->
 
-        Heap.HeapArray A = Heap.turnIntoHeap(list);
-        testMaxHeap(A);
+            testMaxHeap(Heap.turnIntoHeap(testCase.input));
+        }
     }
 
     def testHeapSort() {
 
-        def list = [0, 4, 8, 9, 2, 0, 9, 7, 2].toArray()
-        HeapSort.heapSort(list)
-        assert list == [0, 0, 2, 2, 4, 7, 8, 9, 9];
+        getTestCases(20).each { testCase ->
+
+            HeapSort.heapSort(testCase.input)
+            assert testCase.input == testCase.reference;
+        }
     }
 
     def testMaxHeap(Heap.HeapArray A, int i = 1) {
@@ -34,5 +36,19 @@ class HeapTests extends GroovyTestCase {
             assert A.data[i] >= A.data[Heap.right(i)]
             testMaxHeap(A, Heap.right(i))
         }
+    }
+
+    def getTestCases(int num) {
+        def testCases = SortTestUtils.getTestCases(20, 5, 500);
+
+        testCases.each { testCase ->
+
+            // Ugh: Force 1-based numbering and resort
+            testCase.input[0] = 0;
+            testCase.reference = Arrays.copyOf(testCase.input, testCase.input.length);
+            Arrays.sort(testCase.reference);
+        }
+
+        return testCases
     }
 }

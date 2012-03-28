@@ -17,13 +17,13 @@ class Heap {
     /**
      * Given the unsorted data, turns it into a heap.
      */
-    static HeapArray turnIntoHeap(Object[] data) {
+    static HeapArray turnIntoHeap(int[] data) {
         assert data[0] == 0 // Ensure 1-based numbering (see "important" above)
-        
+
         HeapArray A = HeapArray.wrap(data); // Wrap the data so we can have the heapSize property.
         for (int i: (A.data.length / 2..1)) // Start at floor(max/2) and move left.
             heapify(A, i);
-        
+
         return A;
     }
 
@@ -84,10 +84,10 @@ class Heap {
      */
     static class HeapArray {
 
-        Object[] data
+        int[] data
 
         int heapSize
 
-        static HeapArray wrap(Object[] data) { new HeapArray( data: data, heapSize: data.length ) }
+        static HeapArray wrap(int[] data) { new HeapArray(data: data, heapSize: data.length) }
     }
 }

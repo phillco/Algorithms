@@ -15,7 +15,7 @@ class HeapSort {
      *
      * O(nlgn)
      */
-    static def heapSort(Object[] data) {
+    static def heapSort(int[] data) {
         Heap.HeapArray A = Heap.turnIntoHeap(data);
 
         for (int i: (A.data.length - 1..2)) {
