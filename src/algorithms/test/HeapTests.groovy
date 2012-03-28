@@ -39,7 +39,7 @@ class HeapTests extends GroovyTestCase {
     }
 
     def getTestCases(int num) {
-        def testCases = SortTestUtils.getTestCases(20, 5, 500);
+        def testCases = SortTestUtils.getTestCases(20, 5000, 500);
 
         testCases.each { testCase ->
 
