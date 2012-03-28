@@ -11,5 +11,5 @@ Enjoy!
 Table of Contents
 -----------------
 - **Chapter 4: Divide and Conquer** See [Max Subarray](https://github.com/phillco/Algorithms/blob/master/src/algorithms/MaxSubArray.groovy)
-- **Chapter 6: Heapsort** See [Heap](https://github.com/phillco/Algorithms/blob/master/src/algorithms/Heap.groovy)
+- **Chapter 6: Heapsort** See [Heap](https://github.com/phillco/Algorithms/blob/master/src/algorithms/Heap.groovy) and [HeapSort](https://github.com/phillco/Algorithms/blob/master/src/algorithms/Heap.groovy)
 - **Chapter 15: Dynamic Programming** See [Rod Cutting](https://github.com/phillco/Algorithms/blob/master/src/algorithms/RodCutting.groovy), [Matrix Chaining](https://github.com/phillco/Algorithms/blob/master/src/algorithms/MatrixChaining.groovy), [Edit Distance](https://github.com/phillco/Algorithms/blob/master/src/algorithms/AdvancedEditDistance.groovy), and [DNA Alignment](https://github.com/phillco/Algorithms/blob/master/src/algorithms/DnaAlignment.groovy).

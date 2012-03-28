@@ -1,9 +1,10 @@
 package algorithms
 
 /**
- * Represents a heap stored within a Java array list.
+ * Provides methods to turn an array(list) into a heap. This is not a object-oriented "Heap" class,
+ * but a collection of algorithms as described in Ch 4.
  *
- * The heap property: every node is greater (minheap) or less than (maxheap) its parent.
+ * The heap property (dfn): every node is greater (minheap) or less than (maxheap) its parent.
  * Here we represent a maxheap (where the root is always the biggest element).
  *
  * IMPORTANT: The book uses 1-based indexing (A[1] is the root). For consistency, we use
@@ -59,10 +60,6 @@ class Heap {
             largest = right(i);
 
         return largest;
-    }
-
-    static void test() {
-
     }
 
     //==========================

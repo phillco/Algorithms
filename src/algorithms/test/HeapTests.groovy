@@ -1,19 +1,26 @@
 package algorithms.test
 
 import algorithms.Heap
+import algorithms.HeapSort
 
 /**
  * Tests heaps!
  */
 class HeapTests extends GroovyTestCase {
 
-    void testTurnIntoHeap() {
+    def testTurnIntoHeap() {
 
         def list = [0, 4, 8, 9, 2, 0, 9, 7, 2]
 
         Heap.turnIntoHeap(list);
         testMaxHeap(list);
     }
+    
+    def testHeapSort() {
+        
+        def list = [0, 4, 8, 9, 2, 0, 9, 7, 2]
+        assert (HeapSort.heapSort(list) == [2, 2, 4, 7, 8, 9, 9]);
+    } 
 
     def testMaxHeap(A, int i = 1) {
 
