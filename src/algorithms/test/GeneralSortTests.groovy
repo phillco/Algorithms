@@ -1,12 +1,16 @@
 package algorithms.test
 
 import algorithms.CountingSort
+import algorithms.InsertionSort
 
 /**
- * Tests counting sort and simplerSort().
+ * Tests various sorts.
  */
-class CountingSortTests extends GroovyTestCase {
+class GeneralSortTests extends GroovyTestCase {
 
+    /**
+     * Tests counting sort and simplerSort().
+     */
     def testCountingSort() {
 
         def testCases = SortTestUtils.getTestCases(20, 5000, 500);
@@ -24,5 +28,12 @@ class CountingSortTests extends GroovyTestCase {
         }
     }
 
+    def testInsertionSort() {
+        SortTestUtils.getTestCases(20, 5000, 500).each { testCase ->
+
+            InsertionSort.sort(testCase.input)
+            assert testCase.input == testCase.reference;
+        }
+    }
 
 }

@@ -12,6 +12,7 @@ Enjoy!
 
 Table of Contents
 -----------------
+- **Chapter 2: Getting Started** See [InsertionSort](https://github.com/phillco/Algorithms/blob/master/src/algorithms/InsertionSort.groovy)
 - **Chapter 4: Divide and Conquer** See [Max Subarray](https://github.com/phillco/Algorithms/blob/master/src/algorithms/MaxSubArray.groovy)
 - **Chapter 6: Heapsort** See [Heap](https://github.com/phillco/Algorithms/blob/master/src/algorithms/Heap.groovy) and [Heap Sort](https://github.com/phillco/Algorithms/blob/master/src/algorithms/Heap.groovy)
 - **Chapter 8: Sorting in Linear Time** See [Counting Sort](https://github.com/phillco/Algorithms/blob/master/src/algorithms/CountingSort.groovy)
