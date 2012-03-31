@@ -4,6 +4,7 @@ import algorithms.CountingSort
 import algorithms.InsertionSort
 import algorithms.MergeSort
 import algorithms.QuickSort
+import algorithms.RandomizedQuickSort
 
 /**
  * Tests various sorts.
@@ -54,4 +55,11 @@ class GeneralSortTests extends GroovyTestCase {
         }
     }
 
+    def testRandomizedQuickSort() {
+        SortTestUtils.getTestCases(20, 5000, 500).each { testCase ->
+
+            RandomizedQuickSort.sort(testCase.input)
+            assert testCase.input == testCase.reference;
+        }
+    }
 }
