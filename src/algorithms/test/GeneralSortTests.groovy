@@ -2,6 +2,7 @@ package algorithms.test
 
 import algorithms.CountingSort
 import algorithms.InsertionSort
+import algorithms.MergeSort
 
 /**
  * Tests various sorts.
@@ -32,6 +33,14 @@ class GeneralSortTests extends GroovyTestCase {
         SortTestUtils.getTestCases(20, 5000, 500).each { testCase ->
 
             InsertionSort.sort(testCase.input)
+            assert testCase.input == testCase.reference;
+        }
+    }
+
+    def testMergeSort() {
+        SortTestUtils.getTestCases(20, 5000, 500).each { testCase ->
+
+            MergeSort.sort(testCase.input)
             assert testCase.input == testCase.reference;
         }
     }
