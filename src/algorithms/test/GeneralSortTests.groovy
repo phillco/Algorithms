@@ -1,11 +1,6 @@
 package algorithms.test
 
-import algorithms.CountingSort
-import algorithms.InsertionSort
-import algorithms.MergeSort
-import algorithms.QuickSort
-import algorithms.RandomizedQuickSort
-import algorithms.RadixSort
+import algorithms.*
 
 /**
  * Tests various sorts.
@@ -68,6 +63,14 @@ class GeneralSortTests extends GroovyTestCase {
         SortTestUtils.getTestCases(20, 5000, 500).each { testCase ->
 
             RadixSort.sort(testCase.input)
+            assert testCase.input == testCase.reference;
+        }
+    }
+
+    def testSelectionSort() {
+        SortTestUtils.getTestCases(20, 5000, 500).each { testCase ->
+
+            SelectionSort.sort(testCase.input)
             assert testCase.input == testCase.reference;
         }
     }

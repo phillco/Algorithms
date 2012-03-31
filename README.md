@@ -12,7 +12,7 @@ Enjoy!
 
 Table of Contents
 -----------------
-- **Chapter 2: Getting Started** See [InsertionSort](https://github.com/phillco/Algorithms/blob/master/src/algorithms/InsertionSort.groovy), [MergeSort](https://github.com/phillco/Algorithms/blob/master/src/algorithms/MergeSort.groovy)
+- **Chapter 2: Getting Started** See [InsertionSort](https://github.com/phillco/Algorithms/blob/master/src/algorithms/InsertionSort.groovy), [SelectionSort](https://github.com/phillco/Algorithms/blob/master/src/algorithms/SelectionSort.groovy), [MergeSort](https://github.com/phillco/Algorithms/blob/master/src/algorithms/MergeSort.groovy)
 - **Chapter 4: Divide and Conquer** See [Max Subarray](https://github.com/phillco/Algorithms/blob/master/src/algorithms/MaxSubArray.groovy)
 - **Chapter 6: Heapsort** See [Heap](https://github.com/phillco/Algorithms/blob/master/src/algorithms/Heap.groovy) and [Heap Sort](https://github.com/phillco/Algorithms/blob/master/src/algorithms/Heap.groovy)
 - **Chapter 7: QuickSort** See [QuickSort](https://github.com/phillco/Algorithms/blob/master/src/algorithms/QuickSort.groovy) and [RandomizedQuickSort](https://github.com/phillco/Algorithms/blob/master/src/algorithms/RandomizedQuickSort.groovy).
