@@ -10,7 +10,7 @@ class RedBlackTree {
      */
     class RBNode {
         int value;
-        boolean colored = false; // Black (true) or red (false)
+        boolean colored = false; // Black (true) or red (false, default)
         RBNode left;
         RBNode right;
         RBNode parent;
@@ -78,8 +78,41 @@ class RedBlackTree {
         fixup(insertedNode);
     }
 
-    private void fixup(RBNode n) {
+    /**
+     * Corrects any new problems with the red-black property after inserting.
+     */
+    private void fixup(RBNode node) {
 
+        // The root is always black.
+        if (!node.parent) {
+            node.colored = true
+            return;
+        }
+
+        // Red node -> two back children.
+        if (!node.parent.colored) {
+            if (!node.uncle.colored) {
+                node.parent.colored = true
+                node.uncle.colored = true
+                node.grandParent.colored = false
+                fixup(node.grandParent)
+            } else {
+                if (node == node.parent.right && node.parent == node.grandParent.left) {
+                    rotateLeft(node.parent);
+                    node = node.left;
+                } else if (node == node.parent.left && node.parent == node.grandParent.right) {
+                    rotateRight(node.parent);
+                    node = node.right;
+                }
+
+                node.parent.colored = true
+                node.grandParent.colored = false
+                if (node == node.parent.left && node.parent == node.grandParent.left)
+                    rotateRight(node.grandParent);
+                else
+                    rotateLeft(node.grandParent);
+            }
+        }
     }
 
     /**
