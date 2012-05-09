@@ -1,16 +1,15 @@
 package datastructures
 
 /**
- * Created by IntelliJ IDEA.
- * User: Phillip
- * Date: 5/8/12
- * Time: 10:50 PM
- * To change this template use File | Settings | File Templates.
+ * A skip list.
  */
 class SkipList<T> {
 
     static final MAX_LEVEL = 16;
 
+    /**
+     * A node in the list.
+     */
     class InternalNode<T> {
 
         int key;
@@ -19,10 +18,14 @@ class SkipList<T> {
         InternalNode<T>[] next = new InternalNode<T>[height]
     }
 
+    // The "header" of the list.
     ArrayList<InternalNode<T>> headers = new ArrayList<InternalNode<T>>();
 
     int level() { headers.size() }
 
+    /**
+     * Returns the value of the node with the given key, or null if it doesn't exist.
+     */
     def search(int searchKey) {
 
         // Start at the highest possible header.
@@ -42,25 +45,20 @@ class SkipList<T> {
             return null;
     }
 
-    static int randomLevel() {
-
-        def random = new Random()
-        int level = 0
-        while (random.nextBoolean() && level < MAX_LEVEL)
-            level++;
-
-        return level;
-    }
-
+    /**
+     * Adds the key/value combo to the list.
+     */
     def add(int key, T value) {
 
-        // Start at the highest possible header.
+        // Track the last node at each level.
         InternalNode<T>[] toUpdate = new InternalNode<T>[MAX_LEVEL]
 
+        // Start at the highest applicable level.
         int i = headers.size()
         while (i >= 1 && headers[i - 1].key > key)
             i--;
 
+        // Exactly like search() but we update toUpdate.
         InternalNode node = headers[i];
         for (int i = node.height; i > 1; i--) {
             while (node.next[i].key < key)
@@ -76,16 +74,21 @@ class SkipList<T> {
             int level = randomLevel()
 
             def newNode = new InternalNode<T>(value: value, key: key, height: level)
+
+            // Update all the past references.
             for (int i = 0; i < newNode.height; i++) {
                 newNode.next[i] = toUpdate[i].next[i];
                 toUpdate[i].next[i] = newNode;
-                
-                if ( i >= headers.size())
+
+                if (i >= headers.size())
                     headers.add(newNode)
             }
         }
     }
 
+    /**
+     * Finds the smallest element in the list using (implicit) compareTo.
+     */
     public T min() {
         if (!headers[0])
             return null;
@@ -100,4 +103,18 @@ class SkipList<T> {
 
         return min;
     }
+
+    /**
+     * Returns a random height for a new node.
+     */
+    static int randomLevel() {
+
+        def random = new Random()
+        int level = 0
+        while (random.nextBoolean() && level < MAX_LEVEL)
+            level++;
+
+        return level;
+    }
+
 }

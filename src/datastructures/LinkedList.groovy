@@ -1,14 +1,13 @@
 package datastructures
 
 /**
- * Created by IntelliJ IDEA.
- * User: Phillip
- * Date: 5/8/12
- * Time: 9:52 PM
- * To change this template use File | Settings | File Templates.
+ * A doubly linked list with generics.
  */
 class LinkedList<T> {
 
+    /**
+     * A node in the list.
+     */
     class Node<T> {
 
         T value;
@@ -19,6 +18,9 @@ class LinkedList<T> {
     Node<T> head, tail;
     int size = 0;
 
+    /**
+     * Adds the given node to the head of the list.
+     */
     public synchronized void addToHead(T object) {
         Node<T> node = new Node<T>(value: object, next: head);
         head?.previous = node;
@@ -29,6 +31,9 @@ class LinkedList<T> {
             tail = head;
     }
 
+    /**
+     * Adds the given node to the tail of the list.
+     */
     public synchronized void addToTail(T object) {
         Node<T> node = new Node<T>(value: object, previous: tail);
         tail?.next = node;
@@ -39,6 +44,9 @@ class LinkedList<T> {
             head = tail;
     }
 
+    /**
+     * Finds the smallest element in the list using (implicit) compareTo.
+     */
     public T min() {
         if (!head)
             return null;
@@ -54,6 +62,9 @@ class LinkedList<T> {
         return min;
     }
 
+    /**
+     * Returns if the given value exists in the list.
+     */
     public boolean search(T value) {
         if (!head)
             return false;
@@ -69,6 +80,9 @@ class LinkedList<T> {
         return false;
     }
 
+    /**
+     * Returns the size of the list.
+     */
     public int size() {
         return size;
     }
