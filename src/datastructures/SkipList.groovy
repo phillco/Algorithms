@@ -14,12 +14,15 @@ class SkipList<T> {
 
         int key;
         T value;
-        int height
-        InternalNode<T>[] next = new InternalNode<T>[height]
+        int level
+        InternalNode<T>[] next = new InternalNode<T>[level + 1]
+
+        String toString() { "[$key]: $value (level $level)"}
     }
 
     // The "header" of the list.
-    ArrayList<InternalNode<T>> headers = new ArrayList<InternalNode<T>>();
+    ArrayList<InternalNode<T>> headers = new InternalNode<T>[MAX_LEVEL+1]
+    int listLevel = 0;
 
     int level() { headers.size() }
 
@@ -29,17 +32,17 @@ class SkipList<T> {
     def search(int searchKey) {
 
         // Start at the highest possible header.
-        int i = headers.size()
-        while (i >= 1 && headers[i - 1].key > searchKey)
+        int i = listLevel
+        while (i > 0 && headers[i].key > searchKey)
             i--;
 
         InternalNode node = headers[i];
-        for (int i = node.height; i > 1; i--)
-            while (node.next[i].key < searchKey)
+        for (; i > 0; i--)
+            while (node.next[i] != null && node.next[i].key < searchKey)
                 node = node.next[i]
 
         node = node.next[0]
-        if (node.key == searchKey)
+        if (node?.key == searchKey)
             return node.value;
         else
             return null;
@@ -51,37 +54,54 @@ class SkipList<T> {
     def add(int key, T value) {
 
         // Track the last node at each level.
-        InternalNode<T>[] toUpdate = new InternalNode<T>[MAX_LEVEL]
+        InternalNode<T>[] toUpdate = new InternalNode<T>[MAX_LEVEL+1]
 
         // Start at the highest applicable level.
-        int i = headers.size()
-        while (i >= 1 && headers[i - 1].key > key)
+        int i = listLevel
+        while (i > 0 && (!headers[i] || headers[i].key > key))
             i--;
+
+        // We must insert it first!
+        if (i == 0) {
+            int level = randomLevel()
+            def newNode = new InternalNode<T>(value: value, key: key, level: level, next: new InternalNode<T>[level + 1])
+            for (i = 1; i <= level; i++) {
+
+                if (listLevel >= i)
+                    newNode.next[i] = headers[i]
+                headers[i] = newNode;
+            }
+            listLevel = Math.max(level, listLevel);
+            return;
+        }
 
         // Exactly like search() but we update toUpdate.
         InternalNode node = headers[i];
-        for (int i = node.height; i > 1; i--) {
-            while (node.next[i].key < key)
+        while (i > 0) {
+            while (node.next[i] != null && node.next[i]?.key < key)
                 node = node.next[i]
 
             toUpdate[i] = node;
+            i--;
         }
 
         node = node.next[0]
-        if (node.key == key)
+        if (node?.key == key)
             node.value = value; // Update
         else {
             int level = randomLevel()
 
-            def newNode = new InternalNode<T>(value: value, key: key, height: level)
+            def newNode = new InternalNode<T>(value: value, key: key, level: level, next: new InternalNode<T>[level + 1])
 
             // Update all the past references.
-            for (int i = 0; i < newNode.height; i++) {
-                newNode.next[i] = toUpdate[i].next[i];
-                toUpdate[i].next[i] = newNode;
+            for (i = 1; i <= newNode.level; i++) {
+                if (toUpdate[i]) {
+                    newNode.next[i] = toUpdate[i].next[i];
+                    toUpdate[i].next[i] = newNode;
+                }
 
-                if (i >= headers.size())
-                    headers.add(newNode)
+                if (i > listLevel)
+                    headers[++listLevel] = newNode
             }
         }
     }
@@ -92,25 +112,19 @@ class SkipList<T> {
     public T min() {
         if (!headers[0])
             return null;
-
-        InternalNode<T> node = headers[0];
-        T min = node.value
-        while (node) {
-            if (node.value < min)
-                min = node.value
-            node = node.next[0];
-        }
+        else
+            return headers[0].value;
 
         return min;
     }
 
     /**
-     * Returns a random height for a new node.
+     * Returns a random level for a new node.
      */
     static int randomLevel() {
 
         def random = new Random()
-        int level = 0
+        int level = 1
         while (random.nextBoolean() && level < MAX_LEVEL)
             level++;
 
